@@ -1,0 +1,68 @@
+InsightForge is a platform designed to explore AI-augmented engineering.
+It focuses on retrieval-augmented generation, semantic search, and system-first design.
+
+The goal is to help engineers build explainable, controlled AI systems.
+These systems keep humans in the loop and reduce hallucinations.
+
+AI is not replacing humans but it is trying to teach them more efficiently and humanely rather than wasting time on useless thought and of course they are the better teacher than anyone currently and also better worker except taking cognitive decisions depending on a particular situation and also not responsible for any damage so a supervisor who understands and can communicate with AI effectively and efficienly must be there.
+
+Name: Rover
+Title: Software Engineer | Generative AI Systems | RAG | FastAPI | Python
+Email: gv.ma@gmail.com
+Mobile: +91  9546789452 
+GitHub Profile: github.com/rover/insightforge
+LinkedIn Profile: www.linkedin.com/in/roverprofile
+Professional Summary
+Software Engineer with 11 years of enterprise experience across backend, full-stack, data systems, and production support. Currently focused on designing and building Generative AI systems, including RAG pipelines, asynchronous processing, and FastAPI-based AI services. Strong background in scalable architectures, analytics workflows, and enterprise application reliability.
+________________________________________
+Generative AI Systems Engineering (Independent Work)
+InsightForge
+Designed and developed a full-stack AI-assisted application using React, FastAPI (Python), and PostgreSQL, integrating LLM-powered features for intelligent text-based workflows. Built modular backend services emphasizing clean architecture, extensibility, and API-driven design. Utilized local LLM inference via Ollama for cost-efficient, privacy-aware development and rapid experimentation.
+RAG & Event-Driven Asynchronous AI Pipeline
+Architected an event-driven, asynchronous Retrieval-Augmented Generation (RAG) pipeline for document ingestion and query answering. Implemented document loading, chunking, embedding, and vector storage using FAISS, along with custom retrieval and scoring logic beyond default cosine similarity for improved relevance control. Built FastAPI-based GenAI services exposed via CLI, with the architecture designed for agent-based extensions and future UI integration.
+________________________________________
+Professional Experience
+Associate – Projects | Cognizant Technology Solutions (2019–2024)
+•	Developed and enhanced enterprise level applications with strong backend APIs and design across various platforms, continuous code review and debugging.
+•	Maintaining Reliability and Scalability of Enterprise graded applications.
+•	Built reporting pipelines, data cleaning logic, and business analytics using SQL and Tableau.
+•	Resolved production issues across multi-team integration layers using structured Root Cause Analysis (RCA).
+•	Delivered enhancements and stabilized system flows in complex, large-scale enterprise environments.
+Associate – Projects | Cognizant Technology Solutions (2019)
+•	Developed and enhanced customer-facing insurance applications built on Ruby on Rails.
+•	Analyzed incidents, resolved defects, and managed tickets using JIRA.
+•	Coordinated deployments and optimized existing application modules.
+Software Developer | Mettle Tech (2016–2019)
+•	Built a large-scale construction automation system using Ruby on Rails from scratch.
+•	Integrated external APIs, designed hierarchical data models, and supported analytics reporting.
+•	Developed financial analytics pipelines and managed deployments, scripts, and AWS environments.
+Functional Analyst | Coral Soff’wares (2014–2015)
+•	Delivered ERP training, onboarding, data migration, and MIS reporting.
+Software Implementation Personnel | Spectra Consultancy (2012–2013)
+•	Conducted onsite ERP training, system configuration, and monthly reporting.
+________________________________________
+Technical Skills
+AI & GenAI Engineering
+•	LLM Integration (Ollama, OpenAI-compatible APIs)
+•	Retrieval-Augmented Generation (RAG)
+•	Embeddings & Vector Search (FAISS)
+•	Asynchronous & Event-Driven Processing
+•	Prompt Design & Response Grounding
+Backend & APIs
+•	Python, FastAPI
+•	RESTful API Design
+•	CLI-based Services
+Frontend
+•	React (hooks, components)
+•	JavaScript, jQuery
+Databases
+•	PostgreSQL, MySQL
+Cloud & DevOps
+•	Docker (foundational)
+•	AWS (basic exposure)
+•	Git, SVN, Linux, Shell scripting, YAML
+________________________________________
+Certifications (Selected)
+•	Google Data Analytics Professional Certificate
+•	Python, SQL, AI Foundations (Udemy, Codecademy)
+

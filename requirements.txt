@@ -1,0 +1,46 @@
+# Core
+jupyterlab
+ipykernel
+python-dotenv
+
+# LLM Access
+openai
+ollama
+transformers
+accelerate
+tokenizers
+
+# Embeddings + Vector Search
+sentence-transformers
+faiss-cpu
+scikit-learn
+numpy
+pandas
+
+# RAG Utils
+nltk
+tiktoken
+unstructured
+pdfplumber
+python-docx
+beautifulsoup4
+lxml
+
+# Vector DBs
+chromadb
+weaviate-client
+pymilvus
+
+# Evaluation
+pytest
+rouge-score
+sacrebleu
+
+# Agents + Tools
+langchain
+langgraph
+
+# Utils
+tqdm
+rich
+pyyaml
