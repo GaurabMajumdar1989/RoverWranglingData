@@ -1,12 +1,12 @@
 import faiss
 import json
-import os
 import numpy as np
 from rag_core.config import RAG_STORE_PATH
 
-STORE_DIR = RAG_STORE_PATH
-INDEX_PATH = os.path.join(STORE_DIR, "index.faiss")
-META_PATH = os.path.join(STORE_DIR, "metadata.json")
+
+INDEX_PATH = (RAG_STORE_PATH / "index.faiss").resolve()
+META_PATH = (RAG_STORE_PATH / "metadata.json").resolve()
+
 
 
 class FaissStore:
@@ -15,11 +15,9 @@ class FaissStore:
         self.index = None
         self.metadata = []
 
-        os.makedirs(STORE_DIR, exist_ok=True)
-
-        if os.path.exists(INDEX_PATH):
-            self.index = faiss.read_index(INDEX_PATH)
-            with open(META_PATH, "r") as f:
+        if INDEX_PATH.exists() and META_PATH.exists():
+            self.index = faiss.read_index(str(INDEX_PATH))
+            with open(META_PATH, "r", encoding="utf-8") as f:
                 self.metadata = json.load(f)
         else:
             # Inner Product index (cosine if embeddings normalized)
@@ -44,6 +42,6 @@ class FaissStore:
         return results
 
     def persist(self):
-        faiss.write_index(self.index, INDEX_PATH)
-        with open(META_PATH, "w") as f:
-            json.dump(self.metadata, f, indent=2)
+        faiss.write_index(self.index, str(INDEX_PATH))
+        with open(META_PATH, "w", encoding="utf-8") as f:
+            json.dump(self.metadata, f, indent=2, ensure_ascii=False)

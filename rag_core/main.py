@@ -1,24 +1,25 @@
 # main.py
 import os
-from ingest import load_document, chunk_text, ingest_with_faiss
-from embed import generate_embeddings
-from retrieve import top_k_similar, retrieve_with_faiss
-from config import get_active_provider, USE_FAISS_INGESTION, USE_FAISS_RETRIEVAL
-from generate import generate_answer
+from rag_core.ingest import load_document, chunk_text, ingest_with_faiss
+from rag_core.embed import generate_embeddings
+from rag_core.retrieve import top_k_similar, retrieve_with_faiss
+from rag_core.config import get_active_provider, USE_FAISS_INGESTION, USE_FAISS_RETRIEVAL, PROJECT_ROOT
+from rag_core.generate import generate_answer
 
 print("Starting RAG Core Application")
 print(os.getcwd())
 
-
+doc_path = (PROJECT_ROOT / "fantasy_doc.txt").resolve()
+doc_id = doc_path.name
 
 if __name__ == "__main__":
     print(f"Active LLM Provider: {get_active_provider()}")
-    text = load_document("fantasy_doc.txt")
+    text = load_document(doc_path)
     doc_chunks = chunk_text(text)
-    query = "What is happening in Aethelgard?"
+    query = "What is the Primal Embers and where are they located?"
     
     if USE_FAISS_INGESTION: # Ingestion phase
-      ingest_with_faiss("fantasy_doc.txt", doc_chunks)
+      ingest_with_faiss(doc_id, doc_chunks)
     else:  
       doc_vectors = generate_embeddings(doc_chunks)
 

@@ -1,16 +1,17 @@
 from threading import Thread
 import time
-
 from rag_jobs.in_memory_store import InMemoryJobStore
 from rag_jobs.models import Job
 from rag_jobs.ingestion_worker import IngestionWorker
 from rag_jobs.threaded_runner import worker_loop
 from rag_jobs.reconciler_runner import reconciler_loop
 from rag_core.config import PROJECT_ROOT
-import os
+
+
+doc_path = (PROJECT_ROOT / "fantasy_doc.txt").resolve()
 
 payload={
-    "path": os.path.join(PROJECT_ROOT, "fantasy_doc.txt")
+    "path": str(doc_path)
 }
 
 def main():

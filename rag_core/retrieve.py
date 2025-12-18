@@ -28,7 +28,7 @@ def top_k_similar(
 
     return scores[:k]
 
-def retrieve_with_faiss(query: str, k: int = 10, threshold: float = 0.3):
+def retrieve_with_faiss(query: str, k: int = 5, threshold: float = 0.3):
     """
     Phase 2 retrieval using FAISS
     """
@@ -51,39 +51,59 @@ def retrieve_with_faiss(query: str, k: int = 10, threshold: float = 0.3):
 
     scored_chunks = []
 
-    for r in filtered:
-        chunk = r["metadata"]["text"]
-        cosine_score = r["score"]
-
-        keyword_score = keyword_overlap_score(query, chunk)
-        score = final_score(cosine_score, keyword_score)
-
-        scored_chunks.append({
-            "chunk": chunk,
-            "cosine": cosine_score,
-            "keyword": keyword_score,
-            "final_score": score
-        })
-    # -------- CONTEXT SELECTION --------
-
-    ranked = sorted(
-        scored_chunks,
-        key=lambda x: x["final_score"],
-        reverse=True
-    )
-
-    MIN_FINAL_SCORE = 0.4
-    MAX_CONTEXT_CHUNKS = 4
-
-    selected = [
-        c for c in ranked
-        if c["final_score"] >= MIN_FINAL_SCORE
-    ][:MAX_CONTEXT_CHUNKS]
-
-    if len(selected) == 0:
+    if not filtered:
         return []
 
-    return selected
+    for r in filtered:
+        chunk_idx = r["metadata"]["chunk_index"]
+        chunk = r["metadata"]["text"]
+        raw_vector_score = r["score"]
+
+        keyword_score = keyword_overlap_score(query, chunk)
+        vector_score = min(max(raw_vector_score, 0.0), 1.0) # clamp raw vector similarity into [0,1] range for score fusion
+        score = final_score(vector_score, keyword_score)
+
+        scored_chunks.append({
+            "chunk_idx": chunk_idx,
+            "chunk": chunk,
+            "scores": {
+                "vector": vector_score,
+                "keyword": keyword_score,
+                "final": score,
+                "weights": {
+                    "vector": 0.7,
+                    "keyword": 0.3
+                }
+            }
+        })
+    # -------- CONTEXT SELECTION --------
+    print("Scored chunk before ranking\n", scored_chunks)
+    ranked = sorted(
+        scored_chunks,
+        key=lambda x: x["scores"]["final"],
+        reverse=True
+    )
+    for idx, chunk in enumerate(ranked, start=1):
+        chunk["rank"] = idx
+        # chunk["retrieval_confidence"] = round(chunk["scores"]["final"], 4)
+        chunk["retrieval_confidence"] = float(f"{chunk['scores']['final']:.4f}")
+    
+    assert all(
+        0.0 <= c["retrieval_confidence"] <= 1.0
+        for c in ranked
+    ), "Retrieval confidence out of bounds"
+    
+    assert len({c["chunk_idx"] for c in ranked}) == len(ranked), \
+       "Duplicate chunk_idx in ranked output"
+    
+    assert all(
+        ranked[i]["scores"]["final"] >= ranked[i+1]["scores"]["final"]
+        for i in range(len(ranked)-1)
+    ), "Ranking invariant violated"
+
+    print("Ranked Chunks:\n", ranked)
+
+    return ranked
 
 
 def keyword_overlap_score(query: str, chunk: str) -> float:
@@ -122,39 +142,25 @@ def final_score(cosine: float, keyword: float,
                 w_keyword: float = 0.3) -> float:
     return (w_cosine * cosine) + (w_keyword * keyword)
 
-def select_context(
-    scored_chunks,
-    min_score: float = 0.4,
-    max_chunks: int = 4
-):
-    """
-    scored_chunks: list of dicts
-    {
-      "chunk": str,
-      "final_score": float
-    }
-    """
+# def select_context(
+#     scored_chunks,
+#     min_score: float = 0.4,
+#     max_chunks: int = 4
+# ):
+    
+#     ranked = sorted(
+#         scored_chunks,
+#         key=lambda x: x["final_score"],
+#         reverse=True
+#     )
 
-    # sort by score descending
-    ranked = sorted(
-        scored_chunks,
-        key=lambda x: x["final_score"],
-        reverse=True
-    )
+#     # filter by minimum confidence
+#     filtered = [
+#         c for c in ranked
+#         if c["final_score"] >= min_score
+#     ]
 
-    # filter by minimum confidence
-    filtered = [
-        c for c in ranked
-        if c["final_score"] >= min_score
-    ]
+#     # cap context size
+#     return filtered[:max_chunks]
 
-    # cap context size
-    return filtered[:max_chunks]
-
-def is_confident(selected_chunks, min_chunks: int = 1) -> bool:
-    """
-    Decide whether retrieval is good enough
-    to proceed downstream.
-    """
-    return len(selected_chunks) >= min_chunks
 
