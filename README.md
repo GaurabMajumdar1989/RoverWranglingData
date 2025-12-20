@@ -1,151 +1,294 @@
 # RoverWranglingData (RWD)
 
-## A Governed, Asynchronous RAG System with Agent-Constrained Decisioning
+A **production‑style Retrieval‑Augmented Generation (RAG) system** built from first principles.
+
+This project is **not a demo chatbot**. It is a deliberately engineered RAG pipeline that emphasizes:
+
+* Deterministic behavior
+* Traceability & provenance
+* Evaluation before generation
+* Guardrails and fallbacks
+* Agent‑aware (but non‑autonomous) decision layers
+
+RWD is designed to resemble **real enterprise AI systems** used in regulated, high‑trust environments rather than prompt‑heavy prototypes.
 
 ---
 
-## Overview
+## Why This Project Exists
 
-RoverWranglingData (RWD) is a production-oriented Retrieval-Augmented Generation (RAG) system designed with engineering rigor over agentic hype.
+Most RAG examples:
 
-The project demonstrates how to build:
+* Jump straight to LLM calls
+* Hide failure cases
+* Lack evaluation, metrics, and fallback logic
+* Cannot explain *why* an answer was produced
 
-- An asynchronous, fault-aware RAG pipeline
-- Deterministic retrieval evaluation and guardrails
-- Agent-like decision logic that is governed, auditable, and non-autonomous
-- Enterprise-grade traceability, retry discipline, and accountability
+**RoverWranglingData flips that order.**
 
-RWD intentionally avoids uncontrolled autonomous agents.  
-Instead, it showcases how agents should exist in real systems: constrained, explainable, and subordinate to the pipeline.
-
----
-
-## Core Design Principles
-
-- Determinism before intelligence
-- Metrics before opinions
-- Pipelines before agents
-- Governance before autonomy
-
-Every response produced by the system is:
-
-- Grounded in retrieved evidence
-- Evaluated using explicit metrics
-- Routed using deterministic rules
-- Logged with immutable provenance
+Retrieval quality is measured **before** generation. Decisions are logged. Failures are explicit. LLM calls are controlled, not assumed.
 
 ---
 
-## System Capabilities
+## High‑Level Architecture
 
-### Phase 1–2: Core RAG Pipeline
-
-- Document ingestion and chunking
-- Embedding generation
-- Vector-based retrieval
-- Ranked evidence selection
-
-### Phase 3: Asynchronous Architecture
-
-- Job-based document processing
-- Background workers with heartbeat and status tracking
-- Query-time decoupling from ingestion
-- Safe handling of partial and in-progress data
-
-### Phase 4: Evaluation, Guardrails & Trust
-
-- Retrieval quality metrics:
-  - Mean confidence
-  - Confidence spread
-  - Top-K coverage
-- Deterministic guardrails
-- Failure surface detection
-- Safe, explainable fallbacks
-- No LLM-based judging
-
-### Phase 5: Governed Decision Agents (Non-Autonomous)
-
-- Deterministic decision routing
-- Prompt-governed justification (read-only LLM use)
-- Single bounded retry with confidence-aware re-prompting
-- Immutable decision provenance and audit trails
-
-Agents in RWD cannot:
-
-- Re-run retrieval
-- Override guardrails
-- Change metrics
-- Access tools
-- Escalate authority
-
----
-
-## High-Level Architecture
-
+```
 User Query
-↓
-Retrieval Layer (Vector Search)
-↓
-Evaluation & Guardrails
-↓
-Decision Agent (Rule-Based)
-↓
-Justification (Read-Only LLM)
-↓
-Response Generation
-↓
-Provenance & Audit Log
+   ↓
+Retrieval Pipeline (FAISS)
+   ↓
+Retrieval Metrics & Evaluation
+   ↓
+Guardrails & Failure Surfaces
+   ↓
+Deterministic Fallback OR
+   ↓
+LLM Generation (Controlled)
+```
+
+Optional agent‑aware layers sit **on top** of this pipeline without mutating the core.
 
 ---
 
-## Agent Philosophy
+## Tech Stack
 
-In RWD, agents are not decision-makers.
+* **Python 3.11+**
+* **FAISS** (vector search)
+* **NumPy**
+* **Dataclasses** for structured metrics
+* **Ollama** (local LLM provider)
+* Modular, package‑based project layout
 
-They:
-
-- Route decisions
-- Explain outcomes
-- Operate under strict constraints
-
-They do not:
-
-- Act autonomously
-- Modify system state
-- Override pipeline guarantees
-
-This mirrors real-world enterprise AI systems.
+No cloud dependencies. No hidden services.
 
 ---
 
-## What This Project Demonstrates
+## Project Structure
 
-- Deep understanding of RAG failure modes
-- Asynchronous system design maturity
-- Metric-driven evaluation
-- Controlled use of LLMs
-- Agent governance and accountability
-- Engineering restraint over hype
-
-This is not a toy project.  
-It is a senior-level AI systems design artifact.
+```
+RoverWranglingData/
+│
+├── rag_core/           # Core RAG pipeline
+│   ├── ingest.py       # Document ingestion & chunking
+│   ├── retriever.py    # FAISS retrieval logic
+│   ├── metrics.py      # Retrieval metrics & evaluation
+│   ├── guardrails.py   # Guardrail checks & failure detection
+│   ├── generator.py   # Controlled LLM generation
+│   ├── main.py         # Entry point
+│
+├── rag_jobs/           # Async / batch job simulations
+├── notebooks/          # Exploratory analysis & experiments
+├── fantasy_doc.txt     # Sample knowledge base (demo)
+├── insight_forge_doc.txt
+├── requirements.txt
+├── install_all.ps1     # Windows setup helper
+└── README.md
+```
 
 ---
 
-## Future Work (Intentionally Excluded)
+## Supported RAG Phases
 
-- Autonomous agent loops
-- Tool-using agents
-- Self-modifying pipelines
+| Phase   | Name                             | Status                |
+| ------- | -------------------------------- | --------------------- |
+| Phase 0 | Mental Model Alignment           | Complete              |
+| Phase 1 | Core RAG Pipeline                | Complete              |
+| Phase 2 | Retrieval Intelligence           | Complete & Frozen     |
+| Phase 3 | Async System Design              | Complete & Frozen     |
+| Phase 4 | Evaluation, Guardrails & Trust   | Complete & Frozen     |
+| Phase 5 | Prompt‑Governed Decision Layer   | Design Only           |
+| Phase 6 | Agent‑Aware RAG (Non‑Autonomous) | Design / Experimental |
+| Phase 7 | Interview Weaponization          | Planned               |
 
-These are intentionally excluded to preserve system discipline and trust.
+---
+
+## Setup Instructions (Local)
+
+### 1️⃣ Prerequisites
+
+* Python **3.11 or higher**
+* Git
+* Ollama installed locally
+
+Verify:
+
+```bash
+python --version
+ollama --version
+```
+
+---
+
+### 2️⃣ Clone or Fork
+
+```bash
+git clone https://github.com/<your-username>/RoverWranglingData.git
+cd RoverWranglingData
+```
+
+---
+
+### 3️⃣ Create Virtual Environment
+
+**Windows (PowerShell):**
+
+```bash
+python -m venv env
+env\Scripts\activate
+```
+
+**macOS / Linux:**
+
+```bash
+python -m venv env
+source env/bin/activate
+```
+
+---
+
+### 4️⃣ Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+### 5️⃣ Install a Local LLM via Ollama
+
+Example:
+
+```bash
+ollama pull llama3.1
+```
+
+You can change the model name in the config if needed.
+
+---
+
+## Running the Project
+
+From the project root:
+Ingestion and Retrival are decoupled for now, once final version is developed will be merged into one main.py
+```bash
+python -m rag_jobs.playground ## For ingesting a document
+python -m rag_core.main_phase4 ## For retrieval and generation
+```
+
+Expected output includes:
+
+* Retrieved chunk IDs
+* Confidence scores
+* Guardrail evaluation
+* Either:
+
+  * Deterministic fallback response
+  * OR LLM‑generated answer with citations
+
+---
+
+## How Retrieval Evaluation Works
+
+Each query produces structured metrics:
+
+* **Mean confidence** of retrieved chunks
+* **Confidence spread** (distribution quality)
+* **Top‑K coverage**
+
+These metrics determine whether:
+
+* Generation is allowed
+* A fallback is triggered
+* A retry path is considered
+
+No blind generation.
+
+---
+
+## Guardrails & Fallbacks
+
+RWD explicitly detects:
+
+* Low evidence coverage
+* Over‑distributed confidence
+* Weak retrieval signals
+
+When triggered, the system:
+
+* Avoids hallucination
+* Returns safe, explainable responses
+* Logs failure surfaces for auditability
+
+---
+
+## Agent‑Aware Design (Phase 6)
+
+Agents in RWD are:
+
+* **Non‑autonomous**
+* **Prompt‑governed**
+* **Read‑only over core pipeline**
+
+They may:
+
+* Condense evidence
+* Justify decisions
+* Recommend retries
+
+They **cannot**:
+
+* Modify retrieval logic
+* Bypass guardrails
+* Act independently
+
+---
+
+## Intended Audience
+
+This project is for:
+
+* Senior AI / ML Engineers
+* Backend‑first AI developers
+* System design interview preparation
+* Engineers tired of prompt‑only demos
+
+Not optimized for beginners or no‑code tools.
+
+---
+
+## Forking & Experimentation
+
+You are encouraged to:
+
+* Swap FAISS with pgvector
+* Change chunking strategies
+* Add new evaluation metrics
+* Plug in cloud LLMs
+
+But **do not remove evaluation layers** if you want to preserve the project philosophy.
+
+---
+
+## Disclaimer
+
+This is a learning and demonstration project.
+
+It intentionally prioritizes:
+
+* Correctness over speed
+* Transparency over convenience
+* Engineering discipline over hype
+
+---
+
+## License
+
+MIT License
 
 ---
 
 ## Final Note
 
-RoverWranglingData is built to answer one question clearly:
+If your RAG system cannot explain *why* it answered,
+then it does not deserve to answer at all.
 
-"Can AI systems be both powerful and trustworthy?"
-
-This repository answers yes — with evidence.
+Happy wrangling.
