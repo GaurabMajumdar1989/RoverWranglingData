@@ -1,40 +1,6 @@
-# RoverWranglingData (RWD)
-
-A **production‑style Retrieval‑Augmented Generation (RAG) system** built from first principles.
-
-This project is **not a demo chatbot**. It is a deliberately engineered RAG pipeline that emphasizes:
-
-* Deterministic behavior
-* Traceability & provenance
-* Evaluation before generation
-* Guardrails and fallbacks
-* Agent‑aware (but non‑autonomous) decision layers
-
-RWD is designed to resemble **real enterprise AI systems** used in regulated, high‑trust environments rather than prompt‑heavy prototypes.
-
----
-
-## Why This Project Exists
-
-Most RAG examples:
-
-* Jump straight to LLM calls
-* Hide failure cases
-* Lack evaluation, metrics, and fallback logic
-* Cannot explain *why* an answer was produced
-
-**RoverWranglingData flips that order.**
-
-Retrieval quality is measured **before** generation. Decisions are logged. Failures are explicit. LLM calls are controlled, not assumed.
-
----
-
-## High‑Level Architecture
-
-```
 User Query
    ↓
-Retrieval Pipeline (FAISS)
+Retrieval Pipeline (Vector Search)
    ↓
 Retrieval Metrics & Evaluation
    ↓
@@ -42,318 +8,254 @@ Guardrails & Failure Surfaces
    ↓
 Deterministic Fallback OR
    ↓
-LLM Generation (Controlled)
-```
+Controlled LLM Generation (with citations)
 
-Optional agent‑aware layers sit **on top** of this pipeline without mutating the core.
+Tech Stack
 
----
+Python 3.11+
 
-## Tech Stack
+FAISS for vector search
 
-* **Python 3.11+**
-* **FAISS** (vector search)
-* **NumPy**
-* **Dataclasses** for structured metrics
-* **Ollama** (local LLM provider)
-* Modular, package‑based project layout
+NumPy
 
-No cloud dependencies. No hidden services.
+Dataclasses for structured metrics
 
----
+Ollama for local LLM execution
 
-## Project Structure
+Modular, package-based project layout
 
-```
+No cloud dependencies.
+No hidden services.
+Everything runs locally and transparently.
+
 RoverWranglingData/
 │
-├── rag_core/           # Core RAG pipeline
-│   ├── ingest.py       # Document ingestion & chunking
-│   ├── retriever.py    # FAISS retrieval logic
-│   ├── metrics.py      # Retrieval metrics & evaluation
-│   ├── guardrails.py   # Guardrail checks & failure detection
-│   ├── generator.py   # Controlled LLM generation
-│   ├── main.py         # Entry point
+├── rag_core/
+│   ├── ingest.py            # Document ingestion & chunking
+│   ├── retrieve.py          # Vector + hybrid retrieval
+│   ├── embed.py             # Embedding logic
+│   ├── store.py             # Vector store abstraction
+│   ├── guardrails/
+│   │   ├── evaluator.py     # Guardrail evaluation logic
+│   │   ├── config.py        # Thresholds and limits
+│   │   └── fallbacks.py     # Safe fallback responses
+│   ├── agents/
+│   │   ├── deterministic_agent.py
+│   │   └── contracts.py
+│   ├── tools/
+│   │   └── condense_evidence.py
+│   ├── llm/
+│   │   └── generator.py
+│   └── main_phase4.py       # Retrieval + generation entry point
 │
-├── rag_jobs/           # Async / batch job simulations
-├── notebooks/          # Exploratory analysis & experiments
-├── fantasy_doc.txt     # Sample knowledge base (demo)
-├── insight_forge_doc.txt
+├── tests/                   # Unit + integration tests (Phase 6)
+│   ├── guardrails/
+│   ├── agents/
+│   ├── tools/
+│   └── integration/
+│
+├── fantasy_doc.txt          # Sample knowledge base
+├── pytest.ini
 ├── requirements.txt
-├── install_all.ps1     # Windows setup helper
 └── README.md
-```
 
----
+| Phase | Description                           | Status                |
+| ----: | ------------------------------------- | --------------------- |
+|     0 | Mental Model Alignment                | Complete              |
+|     1 | Core RAG Pipeline                     | Complete              |
+|     2 | Retrieval Intelligence                | Complete & Frozen     |
+|     3 | Async System Design                   | Complete & Frozen     |
+|     4 | Evaluation, Guardrails & Trust        | Complete & Frozen     |
+|     5 | Prompt-Governed Decision Layer        | Complete & Frozen     |
+|     6 | Agent-Aware RAG (Non-Autonomous Core) | **Complete & Frozen** |
 
-## Supported RAG Phases
+Setup Instructions (Local)
+1️⃣ Prerequisites
 
-| Phase   | Name                             | Status                |
-| ------- | -------------------------------- | --------------------- |
-| Phase 0 | Mental Model Alignment           | Complete              |
-| Phase 1 | Core RAG Pipeline                | Complete              |
-| Phase 2 | Retrieval Intelligence           | Complete & Frozen     |
-| Phase 3 | Async System Design              | Complete & Frozen     |
-| Phase 4 | Evaluation, Guardrails & Trust   | Complete & Frozen     |
-| Phase 5 | Prompt‑Governed Decision Layer   | Design Only           |
-| Phase 6 | Agent‑Aware RAG (Non‑Autonomous) | Design / Experimental |
-| Phase 7 | Interview Weaponization          | Planned               |
+Python 3.11+
 
----
+Git
 
-## Setup Instructions (Local)
-
-### 1️⃣ Prerequisites
-
-* Python **3.11 or higher**
-* Git
-* Ollama installed locally
+Ollama (local)
 
 Verify:
 
-```bash
 python --version
 ollama --version
-```
 
----
-
-### 2️⃣ Clone or Fork
-
-```bash
+2️⃣ Clone
 git clone https://github.com/<your-username>/RoverWranglingData.git
 cd RoverWranglingData
-```
 
----
+3️⃣ Virtual Environment
 
-### 3️⃣ Create Virtual Environment
+Windows
 
-**Windows (PowerShell):**
-
-```bash
 python -m venv env
 env\Scripts\activate
-```
 
-**macOS / Linux:**
 
-```bash
+macOS / Linux
+
 python -m venv env
 source env/bin/activate
-```
 
----
-
-### 4️⃣ Install Dependencies
-
-```bash
+4️⃣ Install Dependencies
 pip install -r requirements.txt
-```
 
----
-
-### 5️⃣ Install a Local LLM via Ollama
+5️⃣ Install Local LLM (Ollama)
 
 Example:
 
-```bash
 ollama pull llama3.1
-```
 
-You can change the model name in the config if needed.
 
----
+Model name can be adjusted in configuration.
 
-## Running the Project
+Running the System
 
-From the project root:
-Ingestion and Retrival are decoupled for now, once final version is developed will be merged into one main.py
-```bash
-python -m rag_jobs.playground ## For ingesting a document
-python -m rag_core.main_phase4 ## For retrieval and generation
-```
+Currently, ingestion and retrieval are intentionally decoupled.
+
+python -m rag_jobs.playground     # Ingest documents
+python -m rag_core.main_phase4    # Query, evaluate, generate
+
 
 Expected output includes:
 
-* Retrieved chunk IDs
-* Confidence scores
-* Guardrail evaluation
-* Either:
+Retrieved chunk IDs
 
-  * Deterministic fallback response
-  * OR LLM‑generated answer with citations
+Retrieval confidence scores
 
----
+Guardrail evaluation results
 
-## How Retrieval Evaluation Works
+Either:
+
+A deterministic fallback response
+
+OR a grounded LLM answer with citations
+
+Retrieval Evaluation Model
 
 Each query produces structured metrics:
 
-* **Mean confidence** of retrieved chunks
-* **Confidence spread** (distribution quality)
-* **Top‑K coverage**
+Mean confidence
+
+Confidence spread
+
+Top-K coverage
 
 These metrics determine whether:
 
-* Generation is allowed
-* A fallback is triggered
-* A retry path is considered
+Generation is permitted
 
-No blind generation.
+Evidence must be condensed
 
----
+A safe fallback is required
 
-## Guardrails & Fallbacks
+There is no blind generation.
+
+Guardrails & Safety
 
 RWD explicitly detects:
 
-* Low evidence coverage
-* Over‑distributed confidence
-* Weak retrieval signals
+Low evidence coverage
+
+Over-diffuse evidence (high entropy)
+
+Hallucination risk via query–evidence mismatch
 
 When triggered, the system:
 
-* Avoids hallucination
-* Returns safe, explainable responses
-* Logs failure surfaces for auditability
+Rejects unsafe queries
 
----
+Returns explainable fallbacks
 
-## Agent‑Aware Design (Phase 6)
+Preserves trust over fluency
+
+Failures are treated as signals, not bugs.
+
+Agent-Aware Design (Phase 6)
 
 Agents in RWD are:
 
-* **Non‑autonomous**
-* **Prompt‑governed**
-* **Read‑only over core pipeline**
+Deterministic
+
+Non-autonomous
+
+Read-only over the core pipeline
 
 They may:
 
-* Condense evidence
-* Justify decisions
-* Recommend retries
+Condense evidence
 
-They **cannot**:
+Recommend retries
 
-* Modify retrieval logic
-* Bypass guardrails
-* Act independently
+Justify decisions
 
----
+They cannot:
 
-## Intended Audience
+Modify retrieval logic
 
-This project is for:
+Bypass guardrails
 
-* Senior AI / ML Engineers
-* Backend‑first AI developers
-* System design interview preparation
-* Engineers tired of prompt‑only demos
+Generate answers independently
 
-Not optimized for beginners or no‑code tools.
+This separation defines the trust boundary of the system.
 
----
+Gray-Zone Behavior (By Design)
 
-## Forking & Experimentation
+Some queries lie near the semantic sufficiency boundary.
 
-You are encouraged to:
-
-* Swap FAISS with pgvector
-* Change chunking strategies
-* Add new evaluation metrics
-* Plug in cloud LLMs
-
-But **do not remove evaluation layers** if you want to preserve the project philosophy.
-
----
-
-Gray-Zone Test Description:
-
-RWD may exhibit non-binary outcomes for the same query without any code or data changes. This behavior occurs when retrieval results lie near the semantic sufficiency boundary.
-
-A representative example is the query:
+Example:
 
 “Who is Rover Wrangler and what struggles does he face in Aethelgard?”
 
-In this case:
+In such cases:
 
-Retrieved chunks are highly relevant but fragmented
+Evidence may strongly support events but weakly support identity
 
-Evidence strongly supports struggles but only implicitly defines identity
+Coverage may hover near thresholds
 
-Coverage metrics hover close to the LOW_COVERAGE threshold
+Valid outcomes include:
 
-Observed Behavior
+Safe rejection due to insufficient evidence
 
-Depending on how the LLM internally aggregates the same evidence:
+A grounded answer that explicitly refuses unsupported details
 
-Run A:
-The system correctly rejects the query with
-Insufficient evidence in retrieved context.
+Both are correct.
 
-Run B:
-The system produces a grounded answer using only cited chunks, while explicitly refusing unsupported details.
+This mirrors real production RAG behavior, not demo pipelines.
 
-Both outcomes are considered valid and expected.
+Intended Audience
 
-Why This Happens
+This project is for:
 
-This is not randomness or instability.
+Senior AI / ML Engineers
 
-RWD operates deterministically but allows the LLM to make a final judgment on whether the retrieved context forms a minimally sufficient narrative to answer the question without hallucination.
+Backend-first AI developers
 
-This edge behavior typically occurs when:
+System-design interview preparation
 
-Chunks are semantically overlapping
+Engineers tired of prompt-only demos
 
-Declarative identity statements are weak or distributed
+It is not optimized for beginners or no-code workflows.
 
-Evidence supports “what happened” more than “what is”
-
-Design Rationale
-
-RWD intentionally favors false rejection over false confidence.
-
-When evidence quality is borderline, the system:
-
-Preserves safety
-
-Avoids hallucination
-
-Surfaces uncertainty instead of smoothing it away
-
-This mirrors real-world production RAG behavior rather than demo-grade pipelines.
-
-Takeaway
-
-Failures at the semantic boundary are signals, not bugs.
-
-They indicate where data shape, not model logic, limits answerability.
-
----
-
-## Disclaimer
+Disclaimer
 
 This is a learning and demonstration project.
 
 It intentionally prioritizes:
 
-* Correctness over speed
-* Transparency over convenience
-* Engineering discipline over hype
+Correctness over speed
 
----
+Transparency over convenience
 
-## License
+Engineering discipline over hype
 
-MIT License
+Final Note
 
----
-
-## Final Note
-
-If your RAG system cannot explain *why* it answered,
+If your RAG system cannot explain why it answered,
 then it does not deserve to answer at all.
 
 Happy wrangling.
+
