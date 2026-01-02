@@ -268,6 +268,71 @@ But **do not remove evaluation layers** if you want to preserve the project phil
 
 ---
 
+Gray-Zone Test Description:
+
+RWD may exhibit non-binary outcomes for the same query without any code or data changes. This behavior occurs when retrieval results lie near the semantic sufficiency boundary.
+
+A representative example is the query:
+
+“Who is Rover Wrangler and what struggles does he face in Aethelgard?”
+
+In this case:
+
+Retrieved chunks are highly relevant but fragmented
+
+Evidence strongly supports struggles but only implicitly defines identity
+
+Coverage metrics hover close to the LOW_COVERAGE threshold
+
+Observed Behavior
+
+Depending on how the LLM internally aggregates the same evidence:
+
+Run A:
+The system correctly rejects the query with
+Insufficient evidence in retrieved context.
+
+Run B:
+The system produces a grounded answer using only cited chunks, while explicitly refusing unsupported details.
+
+Both outcomes are considered valid and expected.
+
+Why This Happens
+
+This is not randomness or instability.
+
+RWD operates deterministically but allows the LLM to make a final judgment on whether the retrieved context forms a minimally sufficient narrative to answer the question without hallucination.
+
+This edge behavior typically occurs when:
+
+Chunks are semantically overlapping
+
+Declarative identity statements are weak or distributed
+
+Evidence supports “what happened” more than “what is”
+
+Design Rationale
+
+RWD intentionally favors false rejection over false confidence.
+
+When evidence quality is borderline, the system:
+
+Preserves safety
+
+Avoids hallucination
+
+Surfaces uncertainty instead of smoothing it away
+
+This mirrors real-world production RAG behavior rather than demo-grade pipelines.
+
+Takeaway
+
+Failures at the semantic boundary are signals, not bugs.
+
+They indicate where data shape, not model logic, limits answerability.
+
+---
+
 ## Disclaimer
 
 This is a learning and demonstration project.

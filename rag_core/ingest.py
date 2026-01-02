@@ -1,4 +1,5 @@
 import hashlib
+import faiss
 from pathlib import Path
 import json
 import numpy as np
@@ -76,7 +77,7 @@ def ingest_with_faiss(doc_id: str, chunks: list[str]):
     embeddings = generate_embeddings(chunks)
     print(f"embeddings generated from LLM OhhLLAMA====>\n{embeddings}")
 
-    embeddings = np.array(embeddings).astype("float32")
+    embeddings = embeddings.astype("float32")
     print(f"embeddings generated for FAISS after changing the dimension np.array(embeddings).astype===>\n{embeddings}")
 
     print(f"embeddings dimension change before supplying to store embeddings.shape[1]===>\n{embeddings.shape[1]}")
@@ -92,6 +93,11 @@ def ingest_with_faiss(doc_id: str, chunks: list[str]):
         for i, chunk in enumerate(chunks)
     ]
     print(f"Before adding to store metadata ========{metadata}")
+    #### Resetting on every ingestion the index and metadata for duplication issue of chunks
+    store.index = faiss.IndexFlatIP(store.dim)
+    store.metadata = []
+
+    ### After resetting adding to faiss store
     store.add(embeddings, metadata)
     store.persist()
 

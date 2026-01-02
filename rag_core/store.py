@@ -22,6 +22,7 @@ class FaissStore:
         else:
             # Inner Product index (cosine if embeddings normalized)
             self.index = faiss.IndexFlatIP(dim)
+            self.metadata = []
 
     def add(self, embeddings: np.ndarray, metadata: list[dict]):
         self.index.add(embeddings)

@@ -35,7 +35,7 @@ def retrieve_with_faiss(query: str, k: int = 5, threshold: float = 0.3):
 
     # Step 1: embed query (only one embedding → cheap)
     query_embedding = generate_embeddings([query])
-    query_embedding = np.array(query_embedding).astype("float32")
+    query_embedding = query_embedding.astype("float32")
 
     # Step 2: load FAISS index
     store = FaissStore(dim=query_embedding.shape[1])
@@ -137,9 +137,7 @@ def keyword_overlap_score(query: str, chunk: str) -> float:
 
     return score
 
-def final_score(cosine: float, keyword: float,
-                w_cosine: float = 0.7,
-                w_keyword: float = 0.3) -> float:
+def final_score(cosine: float, keyword: float, w_cosine: float = 0.7, w_keyword: float = 0.3) -> float:
     return (w_cosine * cosine) + (w_keyword * keyword)
 
 # def select_context(

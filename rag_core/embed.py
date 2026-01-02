@@ -51,4 +51,4 @@ def generate_embeddings(texts: list[str]) -> np.ndarray:
     else:
         raise RuntimeError("Unsupported provider")
 
-    return np.array(vectors)
+    return np.array(vectors, dtype="float32")
